@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-class BillScreen extends StatelessWidget {
+class BillScreen extends StatefulWidget {
+  @override
+  _BillScreenState createState() => _BillScreenState();
+}
+
+class _BillScreenState extends State<BillScreen> {
   final Map<String, dynamic> response = {
     "data": {
       "members": ["Britto", "Vishnu", "Neeraj"],
@@ -69,50 +74,85 @@ class BillScreen extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Members:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text(members.join(', ')),
-                  Divider(height: 32, thickness: 2),
-                  Text(
-                    'Items:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ...items.map<Widget>((item) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(item['name']),
-                          subtitle: Text('Quantity: ${item['quantity']}'),
-                          trailing: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Price: ₹${item['price']}'),
-                              Text('Shared By: ${item['buyers'].join(', ')}'),
-                            ],
+              child: Form(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Members:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8.0,
+                      children: members.map<Widget>((member) {
+                        return Chip(
+                          label: Text(member),
+                        );
+                      }).toList(),
+                    ),
+                    Divider(height: 32, thickness: 2),
+                    Text(
+                      'Items:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    ...items.map<Widget>((item) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: TextFormField(
+                              initialValue: item['name'],
+                              decoration: InputDecoration(labelText: 'Food Item'),
+                            ),
+                            subtitle: TextFormField(
+                              initialValue: item['quantity'],
+                              decoration: InputDecoration(labelText: 'Quantity'),
+                              keyboardType: TextInputType.number,
+                            ),
+                            trailing: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                TextFormField(
+                                  initialValue: item['price'],
+                                  decoration: InputDecoration(labelText: 'Price'),
+                                  keyboardType: TextInputType.number,
+                                ),
+                                DropdownButtonFormField<String>(
+                                  value: item['buyers'].first,
+                                  decoration: InputDecoration(labelText: 'Shared By'),
+                                  items: members.map<DropdownMenuItem<String>>((String member) {
+                                    return DropdownMenuItem<String>(
+                                      value: member,
+                                      child: Text(member),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      item['buyers'] = [newValue];
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Divider(),
-                      ],
-                    );
-                  }).toList(),
-                  SizedBox(height: 16),
-                  Text(
-                    'Discount: $offers',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Taxes: ₹$taxes',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+                          Divider(),
+                        ],
+                      );
+                    }).toList(),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      initialValue: offers,
+                      decoration: InputDecoration(labelText: 'Discount'),
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: taxes,
+                      decoration: InputDecoration(labelText: 'Taxes'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
