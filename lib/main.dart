@@ -5,6 +5,7 @@ import 'chat_provider.dart';
 import 'history_screen.dart';
 import 'dashboard_screen.dart';
 import 'chat_screen.dart' as ChatScreen;
+import 'bill_screen.dart';
 
 void main() {
   runApp(
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 16.0),
         ),
       ),
-      home: MainScreen(),
+      home: BillScreen(),
     );
   }
 }
