@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'chat_screen.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -22,14 +23,7 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            context.go('/chat');
-          },
-          child: Text('Go to Chat'),
-        ),
-      ),
+      body: ChatScreen(),
     );
   }
 }
