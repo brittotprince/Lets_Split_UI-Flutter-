@@ -22,6 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _fetchMessages();
+  }
+
+  Future<void> _fetchMessages() async {
+    await Provider.of<ChatProvider>(context, listen: false).fetchMessages();
   }
 
   Future<void> _pickImage() async {
@@ -103,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
                       Provider.of<ChatProvider>(context, listen: false)
-                          .addMessage(_controller.text, 'user');
+                          .sendMessage(_controller.text, 'user');
                       _controller.clear();
                     }
                   },

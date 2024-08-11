@@ -55,7 +55,7 @@ class MainScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text('Welcome to the Chat App'),
+        child: Text("Splitwise AI"),
       ),
     );
   }
