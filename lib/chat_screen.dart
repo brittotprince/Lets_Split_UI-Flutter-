@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'dart:ui';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -28,24 +30,63 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _initializeRecorder() async {
     await _recorder!.openAudioSession();
     await _player!.openAudioSession();
-    await Permission.microphone.request();
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final status = await Permission.storage.status;
+    if (!status.isGranted) {
+      print("Asking user for image permission");
+      await Permission.storage.request();
+    }
+
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
       // Send imageFile to backend
     }
+
+    // final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    // if (pickedFile != null) {
+    //   File imageFile = File(pickedFile.path);
+    //   // Send imageFile to backend
+    // }
   }
 
-  Future<void> _startRecording() async {
-    if (!_isRecording) {
-      _audioPath = '';
-      await _recorder!.startRecorder(toFile: 'audio.aac');
-      setState(() {
-        _isRecording = true;
-      });
+  void _startRecording() async {
+    final root = await getApplicationDocumentsDirectory();
+    final recordingPath = '${root.path}';
+    print(recordingPath);
+    Map<Permission, PermissionStatus> permissions = await [
+      Permission.manageExternalStorage,
+      Permission.audio,
+      Permission.microphone,
+    ].request();
+
+    bool permissionsGranted =
+        (permissions[Permission.manageExternalStorage]?.isGranted ?? false) &&
+            (permissions[Permission.audio]?.isGranted ?? false) &&
+            (permissions[Permission.microphone]?.isGranted ?? false);
+
+    if (permissionsGranted) {
+      Directory appFolder = Directory(recordingPath);
+      bool appFolderExists = await appFolder.exists();
+      if (!appFolderExists) {
+        final created = await appFolder.create(recursive: true);
+        print(created.path);
+      }
+
+      final filepath =
+          '$recordingPath/${DateTime.now().millisecondsSinceEpoch}';
+      print(filepath);
+
+      // final config = RecordConfig();
+
+      await _recorder?.startRecorder(
+        toFile: filepath,
+        // codec: Codec.mp3,
+      );
+    } else {
+      print('Permissions not granted');
     }
   }
 
