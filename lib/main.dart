@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: TextTheme(
-          bodyText2: TextStyle(fontSize: 16.0),
+          bodyMedium: TextStyle(fontSize: 16.0),
         ),
       ),
       home: MainScreen(),
