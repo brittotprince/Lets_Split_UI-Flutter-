@@ -59,6 +59,7 @@ class _BillScreenState extends State<BillScreen> {
     final items = response['data']['items'];
     final taxes = response['data']['taxes'];
     final offers = response['data']['offers'];
+    final grandTotal = response['data']['grandTotal'];
 
     return Scaffold(
       appBar: AppBar(
@@ -66,97 +67,116 @@ class _BillScreenState extends State<BillScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+  padding: const EdgeInsets.all(16.0),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('Members:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      for (var member in members)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: TextFormField(
+            initialValue: member,
+            decoration: InputDecoration(
+              labelText: 'Member',
+              border: OutlineInputBorder(),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Members:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8.0,
-                      children: members.map<Widget>((member) {
-                        return Chip(
-                          label: Text(member),
-                        );
-                      }).toList(),
-                    ),
-                    Divider(height: 32, thickness: 2),
-                    Text(
-                      'Items:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    ...items.map<Widget>((item) {
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: TextFormField(
-                              initialValue: item['name'],
-                              decoration: InputDecoration(labelText: 'Food Item'),
-                            ),
-                            subtitle: TextFormField(
-                              initialValue: item['quantity'],
-                              decoration: InputDecoration(labelText: 'Quantity'),
-                              keyboardType: TextInputType.number,
-                            ),
-                            trailing: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                TextFormField(
-                                  initialValue: item['price'],
-                                  decoration: InputDecoration(labelText: 'Price'),
-                                  keyboardType: TextInputType.number,
-                                ),
-                                DropdownButtonFormField<String>(
-                                  value: item['buyers'].first,
-                                  decoration: InputDecoration(labelText: 'Shared By'),
-                                  items: members.map<DropdownMenuItem<String>>((String member) {
-                                    return DropdownMenuItem<String>(
-                                      value: member,
-                                      child: Text(member),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      item['buyers'] = [newValue];
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                        ],
-                      );
-                    }).toList(),
-                    SizedBox(height: 16),
-                    TextFormField(
-                      initialValue: offers,
-                      decoration: InputDecoration(labelText: 'Discount'),
-                    ),
-                    SizedBox(height: 8),
-                    TextFormField(
-                      initialValue: taxes,
-                      decoration: InputDecoration(labelText: 'Taxes'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            onChanged: (value) {
+              setState(() {
+                members[members.indexOf(member)] = value;
+              });
+            },
           ),
         ),
+      SizedBox(height: 16),
+      Text('Items:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          var item = items[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  initialValue: item['name'],
+                  decoration: InputDecoration(
+                    labelText: 'Item Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      item['name'] = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  initialValue: item['quantity'],
+                  decoration: InputDecoration(
+                    labelText: 'Quantity',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      item['quantity'] = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  initialValue: item['price'],
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      item['price'] = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 8),
+                Text('Buyers: ${item['buyers'].join(', ')}'),
+              ],
+            ),
+          );
+        },
+      ),
+      SizedBox(height: 16),
+      TextFormField(
+        initialValue: taxes,
+        decoration: InputDecoration(
+          labelText: 'Taxes',
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (value) {
+          setState(() {
+            response['data']['taxes'] = value;
+          });
+        },
+      ),
+      SizedBox(height: 16),
+      TextFormField(
+        initialValue: offers,
+        decoration: InputDecoration(
+          labelText: 'Offers',
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (value) {
+          setState(() {
+            response['data']['offers'] = value;
+          });
+        },
+      ),
+      SizedBox(height: 16),
+      Text('Grand Total: \$${grandTotal}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+    ],
+  ),
+),
       ),
     );
   }
