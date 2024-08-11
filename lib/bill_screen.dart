@@ -59,59 +59,61 @@ class BillScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Bill Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Members:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(members.join(', ')),
-                Divider(height: 32, thickness: 2),
-                Text(
-                  'Items:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                ...items.map<Widget>((item) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        title: Text(item['name']),
-                        subtitle: Text('Quantity: ${item['quantity']}'),
-                        trailing: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text('Price: ₹${item['price']}'),
-                            Text('Shared By: ${item['buyers'].join(', ')}'),
-                          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Members:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(members.join(', ')),
+                  Divider(height: 32, thickness: 2),
+                  Text(
+                    'Items:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  ...items.map<Widget>((item) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Text(item['name']),
+                          subtitle: Text('Quantity: ${item['quantity']}'),
+                          trailing: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Price: ₹${item['price']}'),
+                              Text('Shared By: ${item['buyers'].join(', ')}'),
+                            ],
+                          ),
                         ),
-                      ),
-                      Divider(),
-                    ],
-                  );
-                }).toList(),
-                SizedBox(height: 16),
-                Text(
-                  'Discount: $offers',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Taxes: ₹$taxes',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
+                        Divider(),
+                      ],
+                    );
+                  }).toList(),
+                  SizedBox(height: 16),
+                  Text(
+                    'Discount: $offers',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Taxes: ₹$taxes',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
