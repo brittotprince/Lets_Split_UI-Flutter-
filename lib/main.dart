@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'main_screen.dart';
 import 'chat_provider.dart';
 import 'history_screen.dart';
+import 'dashboard_screen.dart';
 
 void main() {
   runApp(
@@ -39,6 +40,15 @@ class MainScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => HistoryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.dashboard),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DashboardScreen()),
               );
             },
           ),
