@@ -4,6 +4,7 @@ import 'main_screen.dart';
 import 'chat_provider.dart';
 import 'history_screen.dart';
 import 'dashboard_screen.dart';
+import 'chat_screen.dart' as ChatScreen;
 
 void main() {
   runApp(
@@ -55,7 +56,7 @@ class MainScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text("Splitwise AI"),
+        child: ChatScreen.ChatScreen(),
       ),
     );
   }

@@ -41,7 +41,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _startRecording() async {
     if (!_isRecording) {
-      _audioPath = await _recorder!.startRecorder(toFile: 'audio.aac');
+      _audioPath = '';
+      await _recorder!.startRecorder(toFile: 'audio.aac');
       setState(() {
         _isRecording = true;
       });
