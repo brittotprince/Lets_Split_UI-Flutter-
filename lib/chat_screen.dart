@@ -64,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
       Provider.of<ChatProvider>(context, listen: false).addVoiceMessage(_audioPath!, 'user');
     }
   }
-
+  
   @override
   void dispose() {
     _recorder!.closeAudioSession();
@@ -112,6 +112,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    onChanged: (text) {
+                      if (text.isNotEmpty) {
+                        Provider.of<ChatProvider>(context, listen: false).startNewChat();
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: 'Enter your message',
                       border: OutlineInputBorder(
@@ -123,9 +128,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
-                    // Send text message to backend
-                    Provider.of<ChatProvider>(context, listen: false).sendMessage(_controller.text, 'user');
-                    _controller.clear();
+                    if (_controller.text.isNotEmpty) {
+                      Provider.of<ChatProvider>(context, listen: false).sendMessage(_controller.text, 'user');
+                      _controller.clear();
+                    }
                   },
                 ),
               ],

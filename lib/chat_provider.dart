@@ -4,8 +4,10 @@ import 'dart:convert';
 
 class ChatProvider with ChangeNotifier {
   List<Map<String, dynamic>> _messages = [];
-  
+  List<Map<String, dynamic>> _chatHistory = [];
+
   List<Map<String, dynamic>> get messages => _messages;
+  List<Map<String, dynamic>> get chatHistory => _chatHistory;
 
   Future<void> fetchMessages() async {
     final response = await http.get(Uri.parse('http://localhost:3000/messages'));
@@ -19,17 +21,17 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> sendMessage(String message, String sender) async {
-    // Simulate a successful API response
+        // Simulate a successful API response
     await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    //     final response = await http.post(
+        //     final response = await http.post(
     //   Uri.parse('http://localhost:3000/messages'),
     //   headers: {'Content-Type': 'application/json'},
     //   body: jsonEncode({'message': message, 'sender': sender}),
     // );
     // if (response.statusCode == 201) {
     _messages.add({'type': 'text', 'message': message, 'sender': sender});
-    notifyListeners();
-    //   } else {
+    
+        //   } else {
     //   throw Exception('Failed to send message');
     // }
   }
@@ -42,5 +44,17 @@ class ChatProvider with ChangeNotifier {
   void addVoiceMessage(String voicePath, String sender) {
     _messages.add({'type': 'voice', 'voicePath': voicePath, 'sender': sender});
     notifyListeners();
+  }
+
+  void startNewChat() {
+    if (_messages.isNotEmpty) {
+      _chatHistory.add({
+        'id': _chatHistory.length + 1,
+        'title': 'Chat with AI - ${_chatHistory.length + 1}',
+        'lastMessage': _messages.last['message'],
+      });
+      _messages.clear();
+      notifyListeners();
+    }
   }
 }
