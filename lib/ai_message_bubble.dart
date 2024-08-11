@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class AIMessageBubble extends StatelessWidget {
-  final String message;
+  final Map<String, dynamic> message;
 
   AIMessageBubble({required this.message});
 
@@ -16,8 +17,21 @@ class AIMessageBubble extends StatelessWidget {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: Text(message),
+        child: _buildMessageContent(),
       ),
     );
+  }
+
+  Widget _buildMessageContent() {
+    switch (message['type']) {
+      case 'text':
+        return Text(message['message']);
+      case 'image':
+        return Image.file(File(message['imagePath']));
+      case 'voice':
+        return Icon(Icons.audiotrack, color: Colors.black);
+      default:
+        return SizedBox.shrink();
+    }
   }
 }

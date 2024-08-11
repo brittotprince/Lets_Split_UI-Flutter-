@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class UserMessageBubble extends StatelessWidget {
-  final String message;
+  final Map<String, dynamic> message;
 
   UserMessageBubble({required this.message});
 
@@ -16,11 +17,24 @@ class UserMessageBubble extends StatelessWidget {
           color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: Text(
-          message,
-          style: TextStyle(color: Colors.white),
-        ),
+        child: _buildMessageContent(),
       ),
     );
+  }
+
+  Widget _buildMessageContent() {
+    switch (message['type']) {
+      case 'text':
+        return Text(
+          message['message'],
+          style: TextStyle(color: Colors.white),
+        );
+      case 'image':
+        return Image.file(File(message['imagePath']));
+      case 'voice':
+        return Icon(Icons.audiotrack, color: Colors.white);
+      default:
+        return SizedBox.shrink();
+    }
   }
 }

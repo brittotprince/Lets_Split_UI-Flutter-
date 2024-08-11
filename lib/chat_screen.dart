@@ -67,18 +67,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: chatProvider.messages.length,
                   itemBuilder: (context, index) {
                     final message = chatProvider.messages[index];
-                    if (message['type'] == 'text') {
-                      if (message['sender'] == 'user') {
-                        return UserMessageBubble(message: message['message']);
-                      } else {
-                        return AIMessageBubble(message: message['message']);
-                      }
-                    } else if (message['type'] == 'image') {
-                      return ImageMessageBubble(imagePath: message['imagePath']);
-                    } else if (message['type'] == 'voice') {
-                      return VoiceMessageBubble(voicePath: message['voicePath']);
+                    if (message['sender'] == 'user') {
+                      return UserMessageBubble(message: message);
+                    } else {
+                      return AIMessageBubble(message: message);
                     }
-                    return SizedBox.shrink();
                   },
                 );
               },
@@ -119,50 +112,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class ImageMessageBubble extends StatelessWidget {
-  final String imagePath;
-
-  ImageMessageBubble({required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.all(8.0),
-        padding: EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: Colors.blueAccent,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Image.file(File(imagePath)),
-      ),
-    );
-  }
-}
-
-class VoiceMessageBubble extends StatelessWidget {
-  final String voicePath;
-
-  VoiceMessageBubble({required this.voicePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.all(8.0),
-        padding: EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: Colors.blueAccent,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Text(voicePath), // Placeholder for voice message
       ),
     );
   }
