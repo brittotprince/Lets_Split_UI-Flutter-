@@ -3,6 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:provider/provider.dart';
+import 'chat_provider.dart';
+import 'ai_message_bubble.dart';
+import 'user_message_bubble.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -36,13 +40,14 @@ class _ChatScreenState extends State<ChatScreen> {
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
       // Send imageFile to backend
+      Provider.of<ChatProvider>(context, listen: false).addImageMessage(imageFile.path, 'user');
     }
   }
 
   Future<void> _startRecording() async {
     if (!_isRecording) {
-      _audioPath = '';
-      await _recorder!.startRecorder(toFile: 'audio.aac');
+      _audioPath = 'audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+      await _recorder!.startRecorder(toFile: _audioPath);
       setState(() {
         _isRecording = true;
       });
@@ -56,12 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _isRecording = false;
       });
       // Send _audioPath to backend
-    }
-  }
-
-  Future<void> _playAudio() async {
-    if (_audioPath != null) {
-      await _player!.startPlayer(fromURI: _audioPath);
+      Provider.of<ChatProvider>(context, listen: false).addVoiceMessage(_audioPath!, 'user');
     }
   }
 
@@ -81,10 +81,20 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
-              children: [
-                // Your chat messages here
-              ],
+            child: Consumer<ChatProvider>(
+              builder: (context, chatProvider, child) {
+                return ListView.builder(
+                  itemCount: chatProvider.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = chatProvider.messages[index];
+                    if (message['sender'] == 'user') {
+                      return UserMessageBubble(message: message);
+                    } else {
+                      return AIMessageBubble(message: message);
+                    }
+                  },
+                );
+              },
             ),
           ),
           Padding(
@@ -114,6 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   icon: Icon(Icons.send),
                   onPressed: () {
                     // Send text message to backend
+                    Provider.of<ChatProvider>(context, listen: false).sendMessage(_controller.text, 'user');
+                    _controller.clear();
                   },
                 ),
               ],
