@@ -87,35 +87,36 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
           ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.image),
-                onPressed: _pickImage,
-              ),
-              IconButton(
-                icon: Icon(_isRecording ? Icons.stop : Icons.mic),
-                onPressed: _isRecording ? _stopRecording : _startRecording,
-              ),
-              IconButton(
-                icon: Icon(Icons.play_arrow),
-                onPressed: _playAudio,
-              ),
-            ],
-          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Enter your message',
-                suffixIcon: IconButton(
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.image),
+                  onPressed: _pickImage,
+                ),
+                IconButton(
+                  icon: Icon(_isRecording ? Icons.stop : Icons.mic),
+                  onPressed: _isRecording ? _stopRecording : _startRecording,
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your message',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
                     // Send text message to backend
                   },
                 ),
-              ),
+              ],
             ),
           ),
         ],
