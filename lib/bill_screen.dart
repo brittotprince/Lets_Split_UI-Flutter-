@@ -61,87 +61,59 @@ class BillScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Members:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(members.join(', ')),
-            SizedBox(height: 16),
-            Text(
-              'Items:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Table(
-              border: TableBorder.all(color: Colors.grey, width: 1),
-              columnWidths: {
-                0: FlexColumnWidth(3),
-                1: FlexColumnWidth(1),
-                2: FlexColumnWidth(2),
-                3: FlexColumnWidth(3),
-              },
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TableRow(
-                  decoration: BoxDecoration(color: Colors.blueAccent),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Food Item', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Total Price', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Shared By', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                    ),
-                  ],
+                Text(
+                  'Members:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                ...items.map<TableRow>((item) {
-                  return TableRow(
-                    decoration: BoxDecoration(color: Colors.grey[200]),
+                SizedBox(height: 8),
+                Text(members.join(', ')),
+                Divider(height: 32, thickness: 2),
+                Text(
+                  'Items:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                ...items.map<Widget>((item) {
+                  return Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['name']),
+                      ListTile(
+                        title: Text(item['name']),
+                        subtitle: Text('Quantity: ${item['quantity']}'),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('Price: ₹${item['price']}'),
+                            Text('Shared By: ${item['buyers'].join(', ')}'),
+                          ],
+                        ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['quantity']),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['price']),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['buyers'].join(', ')),
-                      ),
+                      Divider(),
                     ],
                   );
                 }).toList(),
+                SizedBox(height: 16),
+                Text(
+                  'Discount: $offers',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Taxes: ₹$taxes',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             ),
-            SizedBox(height: 16),
-            Text(
-              'Discount: $offers',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Taxes: $taxes',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+          ),
         ),
       ),
     );
