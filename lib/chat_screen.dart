@@ -28,53 +28,23 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _initializeRecorder() async {
     await _recorder!.openAudioSession();
     await _player!.openAudioSession();
-    await _requestPermissions();
-  }
-
-  Future<void> _requestPermissions() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      await Permission.microphone.request();
-    }
-
-    status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
+    await Permission.microphone.request();
   }
 
   Future<void> _pickImage() async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-
-    if (await Permission.storage.isGranted) {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        File imageFile = File(pickedFile.path);
-        // Send imageFile to backend
-      }
-    } else {
-      // Handle permission denied
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      // Send imageFile to backend
     }
   }
 
   Future<void> _startRecording() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      await Permission.microphone.request();
-    }
-
-    if (await Permission.microphone.isGranted) {
-      if (!_isRecording) {
-        _audioPath = await _recorder!.startRecorder(toFile: 'audio.aac');
-        setState(() {
-          _isRecording = true;
-        });
-      }
-    } else {
-      // Handle permission denied
+    if (!_isRecording) {
+      _audioPath = await _recorder!.startRecorder(toFile: 'audio.aac');
+      setState(() {
+        _isRecording = true;
+      });
     }
   }
 
