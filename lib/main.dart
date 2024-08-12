@@ -39,7 +39,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Main Screen'),
+        title: Text('Let\'s Split AI'),
         actions: [
           IconButton(
             icon: Icon(Icons.history),

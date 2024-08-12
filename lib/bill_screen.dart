@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controllers/chat_controller.dart';
 
+getUserName(String uid) {
+  if (uid == "66ba4cbb0751174cdbe380f9") {
+    return "Neeraj";
+  } else if (uid == "66ba4c930751174cdbe380f6") {
+    return "Vishnu";
+  } else {
+    return "Britto";
+  }
+}
+
 class BillWidget extends StatelessWidget {
   final Map response;
   final ChatController chatController = Get.find();
@@ -49,7 +59,8 @@ class BillWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text('Price: ₹${item['price']}'),
-                          Text('Shared By: ${item['buyers'].join(', ')}'),
+                          Text(
+                              'Shared By: ${item['buyers'].map((element) => getUserName(element)).join(', ')}'),
                         ],
                       ),
                     ),

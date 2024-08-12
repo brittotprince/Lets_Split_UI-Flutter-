@@ -29,6 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   FlutterSoundRecorder? _recorder;
   bool _isRecording = false;
   String? _recordedFilePath;
+  Map voiceUploadResponse = {};
 
   @override
   void initState() {
@@ -115,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // Create Multipart Request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://10.107.42.209:3000/api/v1/billupload"),
+        Uri.parse("https://let-s-split-backend.onrender.com/api/v1/billupload"),
       );
 
       // Attach the file in the request
@@ -153,6 +154,41 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> postExpense(Map body) async {
+    try {
+      final response = await http.post(
+        Uri.parse("https://let-s-split-backend.onrender.com/api/v1/expense"),
+        headers: <String, String>{
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        body: jsonEncode(body),
+      );
+
+      // Send the request
+
+      if (response.statusCode == 200) {
+        print("Upload successful!");
+
+        String responseBody = response.body;
+
+        // Decode the JSON response
+        final decodedJson = jsonDecode(responseBody);
+
+        jsonBill = decodedJson;
+        // Print the decoded JSON
+        print(decodedJson);
+
+        // print(json.decode(response));
+      } else {
+        String responseBody = response.body;
+
+        print("Failed to upload. $responseBody");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
   Future<void> uploadAudio(File audioFile) async {
     try {
       // String fileName = basename(imageFile.path);
@@ -162,7 +198,8 @@ class _ChatScreenState extends State<ChatScreen> {
       // Create Multipart Request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://10.107.42.209:3000/api/v1/voiceUpload"),
+        Uri.parse(
+            "https://let-s-split-backend.onrender.com/api/v1/voiceUpload"),
       );
 
       // Attach the file in the request
@@ -176,6 +213,11 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
 
+      jsonBill['data']['offers'] = "15%";
+      jsonBill['data']['payer'] = "66ba4c930751174cdbe380f6";
+      jsonBill['data']['members'] = ["9446895197", "7733483452", "944656737"];
+      jsonBill['data']['groupId'] = "66ba4e390751174cdbe3810c";
+
       request.fields['billJson'] = json.encode(jsonBill);
 
       // Send the request
@@ -188,7 +230,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
         // Decode the JSON response
         var decodedJson = jsonDecode(responseBody);
-
+        voiceUploadResponse = decodedJson;
         // Print the decoded JSON
         print(decodedJson);
 
@@ -304,9 +346,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat Screen'),
-      ),
+      appBar: AppBar(),
       body: Obx(
         () => Column(
           children: [
@@ -330,7 +370,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Spacer(),
                 TextButton(
                   child: Text('Submit'),
-                  onPressed: () {},
+                  onPressed: () => postExpense(voiceUploadResponse),
                 ),
               ],
             ),
