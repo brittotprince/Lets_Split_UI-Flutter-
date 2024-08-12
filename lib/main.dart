@@ -28,7 +28,41 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 16.0),
         ),
       ),
-      home: MainScreen(),
+      home: BillScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Main Screen'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HistoryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.dashboard),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DashboardScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: ChatScreen.ChatScreen(),
+      ),
     );
   }
 }

@@ -61,24 +61,22 @@ class _ChatScreenState extends State<ChatScreen> {
         _isRecording = false;
       });
       // Send _audioPath to backend
+      Provider.of<ChatProvider>(context, listen: false).addVoiceMessage(_audioPath!, 'user');
     }
+  }
+  
+  @override
+  void dispose() {
+    _recorder!.closeAudioSession();
+    _player!.closeAudioSession();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.image),
-            onPressed: _pickImage,
-          ),
-          IconButton(
-            icon: Icon(_isRecording ? Icons.stop : Icons.mic),
-            onPressed: _isRecording ? _stopRecording : _startRecording,
-          ),
-        ],
+        title: Text('Chat Screen'),
       ),
       body: Column(
         children: [
@@ -89,9 +87,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: chatProvider.messages.length,
                   itemBuilder: (context, index) {
                     final message = chatProvider.messages[index];
-                    return message.isUser
-                        ? UserMessageBubble(message: message)
-                        : AIMessageBubble(message: message);
+                    if (message['sender'] == 'user') {
+                      return UserMessageBubble(message: message);
+                    } else {
+                      return AIMessageBubble(message: message);
+                    }
                   },
                 );
               },
@@ -101,30 +101,43 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                IconButton(
+                  icon: Icon(Icons.image),
+                  onPressed: _pickImage,
+                ),
+                IconButton(
+                  icon: Icon(_isRecording ? Icons.stop : Icons.mic),
+                  onPressed: _isRecording ? _stopRecording : _startRecording,
+                ),
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    onChanged: (text) {
+                      if (text.isNotEmpty) {
+                        Provider.of<ChatProvider>(context, listen: false).startNewChat();
+                      }
+                    },
                     decoration: InputDecoration(
-                      hintText: 'Type a message',
-                      border: OutlineInputBorder(),
+                      hintText: 'Enter your message',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
-                    Provider.of<ChatProvider>(context, listen: false).addTextMessage(_controller.text, 'user');
-                    _controller.clear();
+                    if (_controller.text.isNotEmpty) {
+                      Provider.of<ChatProvider>(context, listen: false).sendMessage(_controller.text, 'user');
+                      _controller.clear();
+                    }
                   },
                 ),
               ],
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: _pickImage,
       ),
     );
   }
