@@ -36,6 +36,38 @@ class MainScreen extends StatelessWidget {
         ],
       ),
       body: ChatScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatScreen()),
+              );
+              break;
+            case 1:
+              context.go('/history');
+              break;
+            case 2:
+              context.go('/dashboard');
+              break;
+          }
+        },
+      ),
     );
   }
 }
