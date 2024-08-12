@@ -32,9 +32,17 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: data['transactionsPerPerson'].entries.map<Widget>((entry) {
             final userId = entry.key;
@@ -46,13 +54,17 @@ class DashboardScreen extends StatelessWidget {
 
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 2,
               child: ExpansionTile(
                 leading: CircleAvatar(
                   backgroundImage: AssetImage('assets/profile1.jpg'),
                 ),
                 title: Text(
                   userName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 subtitle: Text(
                   totalOwesYou > 0
@@ -66,11 +78,12 @@ class DashboardScreen extends StatelessWidget {
                   final groupName = transactionEntry.key;
                   final transaction = transactionEntry.value;
                   return ListTile(
-                    title: Text('Group Name: $groupName'),
+                    title: Text('Group Name: $groupName', style: TextStyle(color: Colors.black)),
                     subtitle: Text(
                       transaction['owes_you'] > 0
                           ? 'Owes you: ₹${transaction['owes_you']}'
                           : 'You owe: ₹${transaction['you_owe']}',
+                      style: TextStyle(color: Colors.black54),
                     ),
                   );
                 }).toList(),
