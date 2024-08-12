@@ -54,66 +54,78 @@ class BillScreen extends StatelessWidget {
     final items = response['data']['items'];
     final taxes = response['data']['taxes'];
     final offers = response['data']['offers'];
+    final grandTotal = response['data']['grandTotal'];
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Bill Details'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Members:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text(members.join(', ')),
-                  Divider(height: 32, thickness: 2),
-                  Text(
-                    'Items:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ...items.map<Widget>((item) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(item['name']),
-                          subtitle: Text('Quantity: ${item['quantity']}'),
-                          trailing: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Price: ₹${item['price']}'),
-                              Text('Shared By: ${item['buyers'].join(', ')}'),
-                            ],
-                          ),
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Members:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(members.join(', ')),
+                Divider(height: 32, thickness: 2),
+                Text(
+                  'Items:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                ...items.map<Widget>((item) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(item['name']),
+                        subtitle: Text('Quantity: ${item['quantity']}'),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('Price: ₹${item['price']}'),
+                            Text('Shared By: ${item['buyers'].join(', ')}'),
+                          ],
                         ),
-                        Divider(),
-                      ],
-                    );
-                  }).toList(),
-                  SizedBox(height: 16),
-                  Text(
-                    'Discount: $offers',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Taxes: ₹$taxes',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+                      ),
+                      Divider(),
+                    ],
+                  );
+                }).toList(),
+                SizedBox(height: 16),
+                Text(
+                  'Discount: $offers',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Taxes: ₹$taxes',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Grand Total: ₹$grandTotal',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ),
         ),
