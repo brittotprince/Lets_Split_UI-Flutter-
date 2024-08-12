@@ -1,66 +1,66 @@
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> userData = [
-    {'name': 'John Doe', 'profilePic': 'assets/profile1.png', 'amount': 120.50},
-    {'name': 'Jane Smith', 'profilePic': 'assets/profile2.png', 'amount': 250.75},
-    {'name': 'Alice Johnson', 'profilePic': 'assets/profile3.png', 'amount': 300.00},
-    // Add more user data here
-  ];
+  final Map<String, dynamic> data = {
+    "totalOwesYou": 1045.01,
+    "totalYouOwe": 0,
+    "netBalance": 1045.01,
+    "transactionsPerPerson": {
+      "66ba0df565c1d782f22d5e00": [
+        {
+          "userName": "Neeraj",
+          "owes_you": 0,
+          "you_owe": 573.94,
+          "groupName": "Split"
+        }
+      ],
+      "66ba0dfe65c1d782f22d5e03": [
+        {
+          "userName": "Vishnu",
+          "owes_you": 0,
+          "you_owe": 471.07,
+          "groupName": "Split"
+        }
+      ]
+    }
+  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
-        backgroundColor: Colors.blueAccent,
       ),
-      body: ListView.builder(
-        itemCount: userData.length,
-        itemBuilder: (context, index) {
-          final user = userData[index];
-          return Card(
-            margin: EdgeInsets.all(8.0),
-            elevation: 4.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
+      body: ListView(
+        children: data['transactionsPerPerson'].entries.map<Widget>((entry) {
+          final userId = entry.key;
+          final transactions = entry.value;
+          final userName = transactions[0]['userName'];
+          final totalOwesYou = transactions.fold(0, (sum, item) => sum + item['owes_you']);
+          final totalYouOwe = transactions.fold(0, (sum, item) => sum + item['you_owe']);
+
+          return ExpansionTile(
+            title: Text(userName),
+            subtitle: Text(
+              totalOwesYou > 0
+                  ? 'Owes you: ₹$totalOwesYou'
+                  : 'You owe: ₹$totalYouOwe',
+              style: TextStyle(
+                color: totalOwesYou > 0 ? Colors.green : Colors.red,
+              ),
             ),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage(user['profilePic']),
-                radius: 30.0,
-              ),
-              title: Text(
-                user['name'],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+            children: transactions.map<Widget>((transaction) {
+              return ListTile(
+                title: Text(transaction['groupName']),
+                subtitle: Text(
+                  transaction['owes_you'] > 0
+                      ? 'Owes you: ₹${transaction['owes_you']}'
+                      : 'You owe: ₹${transaction['you_owe']}',
                 ),
-              ),
-              subtitle: Text(
-                'Amount: \$${user['amount']}',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16.0,
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.blueAccent,
-              ),
-              onTap: () {
-                // Handle onTap event
-              },
-            ),
+              );
+            }).toList(),
           );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle FAB press
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
+        }).toList(),
       ),
     );
   }
