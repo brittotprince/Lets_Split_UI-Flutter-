@@ -48,7 +48,7 @@ class DashboardScreen extends StatelessWidget {
               margin: EdgeInsets.symmetric(vertical: 8.0),
               child: ExpansionTile(
                 leading: CircleAvatar(
-                  child: Text(userName[0]),
+                  backgroundImage: AssetImage('assets/profile1.jpg'),
                 ),
                 title: Text(
                   userName,
@@ -66,7 +66,7 @@ class DashboardScreen extends StatelessWidget {
                   final groupName = transactionEntry.key;
                   final transaction = transactionEntry.value;
                   return ListTile(
-                    title: Text(groupName),
+                    title: Text('Group Name: $groupName'),
                     subtitle: Text(
                       transaction['owes_you'] > 0
                           ? 'Owes you: ₹${transaction['owes_you']}'
