@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:myapp/getx_di.dart';
 import 'package:provider/provider.dart';
 import 'main_screen.dart';
 import 'chat_provider.dart';
@@ -7,6 +9,10 @@ import 'dashboard_screen.dart';
 import 'chat_screen.dart' as ChatScreen;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // await GetStorage.init();
+  GetXDependencyInjector().onInit();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ChatProvider(),
@@ -18,7 +24,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,

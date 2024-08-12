@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:myapp/controllers/chat_controller.dart';
+import 'package:myapp/user_message_bubble.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
@@ -19,6 +22,9 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  final ChatController chatController = Get.find();
+
+  Map jsonBill = Map();
 
   FlutterSoundRecorder? _recorder;
   bool _isRecording = false;
@@ -87,6 +93,9 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_isRecording) {
       await stopRecording();
       print('Recording stopped. File saved at: $_recordedFilePath');
+      File audioFile = File(_recordedFilePath!);
+      uploadAudio(audioFile);
+      chatController.addVoiceChat(_recordedFilePath!);
     } else {
       _recordedFilePath = await startRecording();
       print('Recording started. Saving to: $_recordedFilePath');
@@ -129,14 +138,67 @@ class _ChatScreenState extends State<ChatScreen> {
         String responseBody = await response.stream.bytesToString();
 
         // Decode the JSON response
-        var decodedJson = jsonDecode(responseBody);
+        final decodedJson = jsonDecode(responseBody);
 
+        jsonBill = decodedJson;
         // Print the decoded JSON
         print(decodedJson);
 
         // print(json.decode(response));
       } else {
         print("Failed to upload.");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  Future<void> uploadAudio(File audioFile) async {
+    try {
+      // String fileName = basename(imageFile.path);
+      String mimeType =
+          lookupMimeType(audioFile.path) ?? 'application/octet-stream';
+
+      // Create Multipart Request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("http://10.107.42.209:3000/api/v1/voiceUpload"),
+      );
+
+      // Attach the file in the request
+      request.files.add(
+        http.MultipartFile(
+          'voice',
+          audioFile.readAsBytes().asStream(),
+          audioFile.lengthSync(),
+          filename: 'bill',
+          contentType: MediaType.parse(mimeType),
+        ),
+      );
+
+      request.fields['billJson'] = json.encode(jsonBill);
+
+      // Send the request
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        print("Upload successful!");
+
+        String responseBody = await response.stream.bytesToString();
+
+        // Decode the JSON response
+        var decodedJson = jsonDecode(responseBody);
+
+        // Print the decoded JSON
+        print(decodedJson);
+
+        chatController.addResponseChat(decodedJson);
+
+        // print(json.decode(response));
+      } else {
+        print("Failed to upload.");
+        print(response.statusCode);
+        print(await response.stream.bytesToString());
       }
     } catch (e) {
       print("Error: $e");
@@ -150,11 +212,12 @@ class _ChatScreenState extends State<ChatScreen> {
       await Permission.storage.request();
     }
 
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
       // Send imageFile to backend
       uploadImage(imageFile);
+      chatController.addImageChat(pickedFile.path);
     }
 
     // final Uri uri = Uri.parse('http://localhost:3000/api/v1/billupload');
@@ -244,47 +307,50 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text('Chat Screen'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
+      body: Obx(
+        () => Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: chatController.chatList.value.length,
+                itemBuilder: (context, index) => UserMessageBubble(
+                    chat: chatController.chatList.value[index]),
+              ),
+            ),
+            Row(
               children: [
-                // Your chat messages here
+                IconButton(
+                  icon: Icon(Icons.image),
+                  onPressed: _pickImage,
+                ),
+                IconButton(
+                  icon: Icon(_isRecording ? Icons.stop : Icons.mic),
+                  onPressed: _toggleRecording,
+                ),
+                Spacer(),
+                TextButton(
+                  child: Text('Submit'),
+                  onPressed: () {},
+                ),
               ],
             ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.image),
-                onPressed: _pickImage,
-              ),
-              IconButton(
-                icon: Icon(_isRecording ? Icons.stop : Icons.mic),
-                onPressed: _toggleRecording,
-              ),
-              IconButton(
-                icon: Icon(Icons.play_arrow),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Enter your message',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    // Send text message to backend
-                  },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'Enter your message',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      // Send text message to backend
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
