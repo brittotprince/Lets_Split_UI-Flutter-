@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:myapp/controllers/chat_controller.dart';
+import 'controllers/chat_controller.dart';
 
 getUserName(String uid) {
   if (uid == "66ba4cbb0751174cdbe380f9") {

@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
+import 'controllers/audio_controller.dart';
 // import 'package:get_storage/get_storage.dart';
 import 'package:myapp/controllers/chat_controller.dart';
 
 class GetXDependencyInjector {
   void onInit() {
     Get.put(ChatController());
+    Get.put(AudioController());
     // Get.put(AuthController());
     // Get.put(GetStorage());
     // Get.put(LocationController());

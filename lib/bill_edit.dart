@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'bill_screen.dart';
 
 class BillEditScreen extends StatefulWidget {
   final Map response;
@@ -10,53 +12,6 @@ class BillEditScreen extends StatefulWidget {
 }
 
 class _BillEditScreenState extends State<BillEditScreen> {
-  // final Map<String, dynamic> response = {
-  //   "data": {
-  //     "members": ["Britto", "Vishnu", "Neeraj"],
-  //     "items": [
-  //       {
-  //         "name": "Prawns Biryani",
-  //         "quantity": "1",
-  //         "price": "600",
-  //         "buyers": ["Britto"]
-  //       },
-  //       {
-  //         "name": "Kala Khatta",
-  //         "quantity": "1",
-  //         "price": "135",
-  //         "buyers": ["Neeraj"]
-  //       },
-  //       {
-  //         "name": "Kokum Kadhi",
-  //         "quantity": "1",
-  //         "price": "135",
-  //         "buyers": ["Vishnu"]
-  //       },
-  //       {
-  //         "name": "Bottled Water",
-  //         "quantity": "1",
-  //         "price": "35",
-  //         "buyers": ["Britto", "Vishnu", "Neeraj"]
-  //       },
-  //       {
-  //         "name": "Chicken Pepper Ghee Roast",
-  //         "quantity": "1",
-  //         "price": "495",
-  //         "buyers": ["Neeraj"]
-  //       },
-  //       {
-  //         "name": "Veg Biryani",
-  //         "quantity": "1",
-  //         "price": "380",
-  //         "buyers": ["Vishnu"]
-  //       }
-  //     ],
-  //     "taxes": "88",
-  //     "grandTotal": "1848",
-  //     "offers": "15%"
-  //   }
-  // };
-
   @override
   Widget build(BuildContext context) {
     final response = widget.response;
@@ -69,6 +24,13 @@ class _BillEditScreenState extends State<BillEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bill Details'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.back();
+          Get.snackbar('', 'Bill details updated ✅');
+        },
+        child: const Icon(Icons.save),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -147,7 +109,8 @@ class _BillEditScreenState extends State<BillEditScreen> {
                           },
                         ),
                         SizedBox(height: 8),
-                        Text('Buyers: ${item['buyers'].join(', ')}'),
+                        Text(
+                            'Buyers: ${item['buyers'].map((element) => getUserName(element)).join(', ')}'),
                       ],
                     ),
                   );
@@ -180,7 +143,7 @@ class _BillEditScreenState extends State<BillEditScreen> {
                 },
               ),
               SizedBox(height: 16),
-              Text('Grand Total: \$${grandTotal}',
+              Text('Grand Total: \Rs.${grandTotal}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ],
           ),

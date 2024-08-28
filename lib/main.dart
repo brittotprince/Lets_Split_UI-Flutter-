@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:myapp/getx_di.dart';
+import 'controllers/chat_controller.dart';
+import 'getx_di.dart';
 import 'package:provider/provider.dart';
-import 'main_screen.dart';
-import 'chat_provider.dart';
 import 'history_screen.dart';
 import 'dashboard_screen.dart';
 import 'chat_screen.dart' as ChatScreen;
@@ -14,10 +13,7 @@ void main() {
   // await GetStorage.init();
   GetXDependencyInjector().onInit();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ChatProvider(),
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 
@@ -35,6 +31,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatelessWidget {
+  final ChatController chatController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +50,7 @@ class MainScreen extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.dashboard),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => DashboardScreen()),
-              );
-            },
+            onPressed: () => chatController.getDashBoard(),
           ),
         ],
       ),

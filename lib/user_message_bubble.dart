@@ -1,9 +1,9 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/bill_screen.dart';
+import 'bill_screen.dart';
 import 'dart:io';
 
-import 'package:myapp/controllers/chat_controller.dart';
+import 'controllers/chat_controller.dart';
 
 class UserMessageBubble extends StatefulWidget {
   final ChatModel chat;

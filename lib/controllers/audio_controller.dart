@@ -1,38 +1,31 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:get/get.dart';
+import 'chat_controller.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class AudioRecorderApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AudioRecorderScreen(),
-    );
-  }
-}
-
-class AudioRecorderScreen extends StatefulWidget {
-  @override
-  _AudioRecorderScreenState createState() => _AudioRecorderScreenState();
-}
-
-class _AudioRecorderScreenState extends State<AudioRecorderScreen> {
+class AudioController extends GetxController {
+  final ChatController chatController = Get.find();
   FlutterSoundRecorder? _recorder;
-  bool _isRecording = false;
-  String? _recordedFilePath;
+  final isRecording = false.obs;
+  String _recordedFilePath = '';
 
   @override
-  void initState() {
-    super.initState();
+  void onInit() {
+    _recorder = FlutterSoundRecorder();
     initRecorder();
+    super.onInit();
   }
 
   @override
-  void dispose() {
+  void onClose() {
+    _recorder!.closeAudioSession();
+    // _player!.closeAudioSession();
     disposeRecorder();
-    super.dispose();
+    super.onClose();
   }
 
   Future<bool> requestPermissions() async {
@@ -60,15 +53,15 @@ class _AudioRecorderScreenState extends State<AudioRecorderScreen> {
       codec: Codec.aacADTS,
     );
 
-    _isRecording = true;
+    isRecording.value = true;
     return filePath;
   }
 
   Future<void> stopRecording() async {
-    if (_recorder == null || !_isRecording) return;
+    if (_recorder == null || !isRecording.value) return;
 
     await _recorder!.stopRecorder();
-    _isRecording = false;
+    isRecording.value = false;
   }
 
   Future<void> disposeRecorder() async {
@@ -78,28 +71,16 @@ class _AudioRecorderScreenState extends State<AudioRecorderScreen> {
     }
   }
 
-  void _toggleRecording() async {
-    if (_isRecording) {
+  void toggleRecording() async {
+    if (isRecording.value) {
       await stopRecording();
       print('Recording stopped. File saved at: $_recordedFilePath');
+      File audioFile = File(_recordedFilePath!);
+      chatController.addVoiceChat(_recordedFilePath!);
+      chatController.uploadAudio(audioFile);
     } else {
-      _recordedFilePath = await startRecording();
+      _recordedFilePath = await startRecording() ?? '';
       print('Recording started. Saving to: $_recordedFilePath');
     }
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Audio Recorder')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _toggleRecording,
-          child: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
-        ),
-      ),
-    );
   }
 }
